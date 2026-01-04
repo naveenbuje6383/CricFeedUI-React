@@ -1,13 +1,12 @@
 export interface Post {
-  id: number;
-  authorName: string;
+  postId: string;
+  author: string;           // ← matches API
   authorAvatar?: string;
-  timeAgo: string;
   content: string;
-  totalScore: number;
-
+  imageUrl?: string | null;
+  score: number;
   likes: number;
   comments: number;
   shares: number;
-
+  createdAt: string;
 }

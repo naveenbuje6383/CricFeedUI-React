@@ -19,7 +19,9 @@ interface Props {
 
 const PostCard = ({ post }: Props) => {
   const [selectedScore, setSelectedScore] = useState<number | null>(null);
-  const [score, setScore] = useState(post.totalScore);
+  const [score, setScore] = useState<number>(post.score);
+
+  const authorInitial = post.author?.charAt(0).toUpperCase() ?? "U";
 
   return (
     <Card sx={{ mb: 3, borderRadius: 3 }}>
@@ -27,11 +29,16 @@ const PostCard = ({ post }: Props) => {
         {/* HEADER */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center" gap={2}>
-            <Avatar>{post.authorName[0]}</Avatar>
+            <Avatar src={post.authorAvatar || undefined}>
+              {authorInitial}
+            </Avatar>
+
             <Box>
-              <Typography fontWeight={600}>{post.authorName}</Typography>
+              <Typography fontWeight={600}>
+                {post.author}
+              </Typography>
               <Typography variant="body2" color="text.secondary">
-                {post.timeAgo}
+                {new Date(post.createdAt).toLocaleString()}
               </Typography>
             </Box>
           </Box>
@@ -40,7 +47,25 @@ const PostCard = ({ post }: Props) => {
         </Box>
 
         {/* CONTENT */}
-        <Typography sx={{ my: 2 }}>{post.content}</Typography>
+        <Typography sx={{ my: 2 }}>
+          {post.content}
+        </Typography>
+
+        {/* IMAGE (CONDITIONAL) */}
+        {post.imageUrl && (
+          <Box
+            component="img"
+            src={post.imageUrl}
+            alt="Post"
+            sx={{
+              width: "100%",
+              maxHeight: 420,
+              objectFit: "cover",
+              borderRadius: 2,
+              my: 2,
+            }}
+          />
+        )}
 
         {/* FOOTER */}
         <Box
@@ -49,16 +74,18 @@ const PostCard = ({ post }: Props) => {
           justifyContent="space-between"
           gap={2}
         >
-          {/* ICONS */}
+          {/* LEFT ICONS */}
           <Box display="flex" gap={3} color="text.secondary">
             <Box display="flex" alignItems="center" gap={0.5}>
               <FavoriteBorderIcon fontSize="small" />
               <Typography variant="body2">{post.likes}</Typography>
             </Box>
+
             <Box display="flex" alignItems="center" gap={0.5}>
               <ChatBubbleOutlineIcon fontSize="small" />
               <Typography variant="body2">{post.comments}</Typography>
             </Box>
+
             <Box display="flex" alignItems="center" gap={0.5}>
               <ShareOutlinedIcon fontSize="small" />
               <Typography variant="body2">{post.shares}</Typography>
@@ -74,8 +101,9 @@ const PostCard = ({ post }: Props) => {
                 variant={selectedScore === run ? "contained" : "outlined"}
                 onClick={() => {
                   setSelectedScore(run);
-                  setScore(post.totalScore + run);
+                  setScore((prev) => prev + run);
                 }}
+                sx={{ minWidth: 36 }}
               >
                 {run}
               </Button>
