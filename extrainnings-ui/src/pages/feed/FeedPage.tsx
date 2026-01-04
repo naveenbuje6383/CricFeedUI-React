@@ -1,41 +1,43 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
+import { useEffect, useState } from "react";
 import PostCard from "../../components/post/PostCard";
+import { getPosts } from "../../api/posts.api";
 import type { Post } from "../../types/post";
 
-const posts: Post[] = [
-  {
-    id: 1,
-    authorName: "Sarah Chen",
-    timeAgo: "2h ago",
-    content:
-      "Just completed an amazing tournament run! The final match was intense 🔥",
-    totalScore: 28,
-    likes: 12,
-    comments: 8,
-    shares: 7,
-  },
-  {
-    id: 2,
-    authorName: "Mike Rodriguez",
-    timeAgo: "4h ago",
-    content:
-      "Training session highlights from today. Working on new strategies!",
-    totalScore: 35,
-    likes: 18,
-    comments: 15,
-    shares: 7,
-  },
-];
-
 const FeedPage = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getPosts()
+      .then(setPosts)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 6 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!posts.length) {
+    return (
+      <Typography textAlign="center" sx={{ mt: 4 }}>
+        No posts yet
+      </Typography>
+    );
+  }
+
   return (
-    <Box sx={{ maxWidth: 900, width: "100%", mx: "auto" }}>
-      <Typography variant="h5" textAlign="center" mb={3}>
+    <Box sx={{ maxWidth: 900, mx: "auto", px: { xs: 1, sm: 2 } }}>
+      <Typography variant="h5" sx={{ mb: 3, textAlign: "center" }}>
         Latest Posts
       </Typography>
 
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.postId} post={post} />
       ))}
     </Box>
   );
